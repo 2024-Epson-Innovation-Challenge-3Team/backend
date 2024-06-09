@@ -9,7 +9,7 @@ const NESTIA_CONFIG: INestiaConfig = {
     return await NestFactory.create(AppModule);
   },
   swagger: {
-    output: 'dist/swagger.json',
+    output: 'swagger.json',
     security: {
       bearer: {
         type: 'apiKey',
