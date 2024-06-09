@@ -32,6 +32,7 @@
     "rxjs": "^7.8.1",
     "sqlite3": "^5.1.7",
     "typeorm": "^0.3.20",
+    "typeorm-transactional": "^0.5.0",
     "typia": "^6.0.6"
   },
   "devDependencies": {

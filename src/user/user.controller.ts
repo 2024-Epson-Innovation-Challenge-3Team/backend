@@ -11,7 +11,7 @@ export class UserController {
     return this.userService.sayHello();
   }
 
-  @TypedRoute.Get('insertInitValue')
+  @TypedRoute.Get('insertIpnitValue')
   async insertInitValue() {
     return this.userService.insertInitValue();
   }
