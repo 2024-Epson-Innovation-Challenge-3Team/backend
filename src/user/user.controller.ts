@@ -2,6 +2,7 @@ import { Controller } from '@nestjs/common';
 import { TypedRoute } from '@nestia/core';
 import { UserService } from './user.service';
 import { Public } from '../auth/public.deco';
+import { UserEntity } from '../entities/user.entity';
 
 @Controller()
 export class UserController {
@@ -9,12 +10,13 @@ export class UserController {
 
   @TypedRoute.Get('sayHello')
   @Public()
-  async sayHello() {
+  async sayHello(): Promise<UserEntity[]> {
     return this.userService.sayHello();
   }
 
   @TypedRoute.Get('insertIpnitValue')
-  async insertInitValue() {
+  @Public()
+  async insertInitValue(): Promise<UserEntity> {
     return this.userService.insertInitValue();
   }
 }

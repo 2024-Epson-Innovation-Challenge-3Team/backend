@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/JwtAuth.guard';
+import { UserEntity } from './entities/user.entity';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { JwtAuthGuard } from './auth/JwtAuth.guard';
           database: ':memory:',
           logging: true,
           synchronize: true,
-          entities: ['dist/**/entities/*.js'],
+          entities: ['dist/**/entities/*.js', UserEntity],
         };
       },
     }),
