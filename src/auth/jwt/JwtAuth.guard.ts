@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { IS_PUBLIC_KEY } from './public.deco';
+import { IS_PUBLIC_KEY } from '../public.deco';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -20,12 +20,5 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     ]);
 
     return isPublic ? true : super.canActivate(context);
-  }
-
-  handleRequest(err, user, info) {
-    if (err || !user) {
-      throw err || new UnauthorizedException();
-    }
-    return user;
   }
 }

@@ -9,7 +9,6 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @TypedRoute.Get('sayHello')
-  @Public()
   async sayHello(): Promise<UserEntity[]> {
     return this.userService.sayHello();
   }

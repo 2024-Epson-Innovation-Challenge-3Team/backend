@@ -8,7 +8,7 @@ import { DataSource } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from './auth/JwtAuth.guard';
+import { JwtAuthGuard } from './auth/jwt/JwtAuth.guard';
 import { UserEntity } from './entities/user.entity';
 
 @Module({
