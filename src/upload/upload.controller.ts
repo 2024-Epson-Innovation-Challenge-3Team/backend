@@ -5,6 +5,7 @@ import { UploadService } from './upload.service';
 import { ConfigService } from '@nestjs/config';
 import { ConfigServiceType } from '../common/configServiceType';
 import { UploadFileRes } from './res/uploadFile.res';
+import { Public } from "../auth/public.deco";
 
 @Controller()
 export class UploadController {
@@ -13,7 +14,8 @@ export class UploadController {
     private readonly configService: ConfigService<ConfigServiceType>,
   ) {}
   @TypedRoute.Post('upload')
-  @UseInterceptors(FilesInterceptor('file'))
+  // @UseInterceptors(FilesInterceptor('file'))
+  @Public()
   async uploadFile(@TypedFormData.Body() uploadFileRes: UploadFileRes) {
     return this.uploadService.uploadFile(uploadFileRes);
   }

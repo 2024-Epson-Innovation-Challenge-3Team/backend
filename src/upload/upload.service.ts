@@ -13,6 +13,9 @@ export class UploadService {
   async uploadFile(uploadFileRes: UploadFileRes) {
     await this.fileSvc.uploadFiles(uploadFileRes.files);
 
+    const { name, size, type} = uploadFileRes.files[0];
+    console.log(name, size, type);
+
     // uploadFileRes.files[0].name;
     // const fileEntities = files.map(FileEntity.multerToEntity);
 
