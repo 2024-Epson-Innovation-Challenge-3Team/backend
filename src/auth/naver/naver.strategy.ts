@@ -3,12 +3,13 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-naver';
 import { AuthService } from '../auth.service';
 import { ConfigService } from '@nestjs/config';
+import { ConfigServiceType } from '../../common/configServiceType';
 
 @Injectable()
 export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
   constructor(
     private readonly authService: AuthService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService<ConfigServiceType>,
   ) {
     super({
       clientID: configService.get('NAVER_CLIENT_ID'),
