@@ -14,16 +14,15 @@ export class AuthService {
   private readonly host = this.configService.get('EPSON_HOST');
   private readonly clientId = this.configService.get('EPSON_CLIENT_ID');
   private readonly secret = this.configService.get('EPSON_SECRET');
-  private readonly device = this.configService.get('EPSON_DEVICE');
 
-  async authenticate(): Promise<AuthResType> {
+  async authenticate(printerId: string): Promise<AuthResType> {
     const authUri = `https://${this.host}/api/1/printing/oauth2/auth/token?subject=printer`;
     const auth = Buffer.from(`${this.clientId}:${this.secret}`).toString(
       'base64',
     );
     const bodyParams = {
       grant_type: 'password',
-      username: this.device,
+      username: printerId,
       password: '',
     };
 

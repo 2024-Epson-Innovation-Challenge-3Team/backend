@@ -14,7 +14,8 @@
     "start:prod": "node dist/main",
     "build": "nest build",
     "start:debug": "nest start --debug --watch",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "prepare": "ts-patch install && typia patch"
   },
   "dependencies": {
     "@nestia/core": "^3.2.1",
@@ -73,7 +74,8 @@
     "ts-node": "^10.9.2",
     "ts-patch": "^3.2.0",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.2",
+    "uuid": "^10.0.0"
   },
   "jest": {
     "moduleFileExtensions": [

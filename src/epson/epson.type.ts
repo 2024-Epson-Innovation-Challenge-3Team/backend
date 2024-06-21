@@ -7,6 +7,11 @@ export type PrintResType = {
   upload_uri: string;
 };
 
+export type AlarmServiceType = {
+  notification: boolean;
+  callback_uri: string;
+};
+
 export type PrintJobDataType = {
   job_name: string;
   print_mode: 'document' | 'photo';

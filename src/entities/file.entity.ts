@@ -1,14 +1,8 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseDateEntity } from './baseDate.entity';
 import { UserEntity } from './user.entity';
 import { UploadEntity } from './upload.entity';
+import { UploadFilesRes } from '../common/files/services/fileLocal.impl';
 
 @Entity({ name: 'files' })
 export class FileEntity extends BaseDateEntity {
@@ -30,16 +24,18 @@ export class FileEntity extends BaseDateEntity {
   @ManyToOne(() => UserEntity, (d) => d.uploadFiles)
   uploader: UserEntity;
 
-  @OneToOne(() => UploadEntity, (d) => d.file)
+  @ManyToOne(() => UploadEntity, (d) => d.files, {
+    cascade: ['remove'],
+    onDelete: 'CASCADE',
+  })
   upload: UserEntity;
 
-  static multerToEntity(file: Express.Multer.File) {
+  static UploadFilesResToEntity(res: UploadFilesRes) {
     const fileEntity = new FileEntity();
-
-    fileEntity.fileName = file.filename;
-    fileEntity.orgFileName = file.originalname;
-    fileEntity.fileExtension = file.mimetype;
-    fileEntity.fileSize = file.size;
+    fileEntity.fileName = res.fileName;
+    fileEntity.fileSize = res.size;
+    fileEntity.fileExtension = res.ext;
+    fileEntity.orgFileName = res.orgFileName;
     return fileEntity;
   }
 }

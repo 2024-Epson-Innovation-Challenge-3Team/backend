@@ -1,17 +1,21 @@
 import { Injectable } from '@nestjs/common';
+import { UserEntity } from '../entities/user.entity';
 import { UserRepo } from './repository/user.repo';
 
 @Injectable()
 export class UserService {
   constructor(private readonly userRepo: UserRepo) {}
 
-  async sayHello() {
-    return this.userRepo.find();
+  async currentUserInfo(id: UserEntity['id']) {
+    return this.userRepo.findBy({ id });
   }
 
-  insertInitValue() {
-    return this.userRepo.save({
-      name: '차규범 ㅋㅋ',
+  async getUploadedFilesCnt(id: UserEntity['id']) {
+    const { uploads } = await this.userRepo.findOneOrFail({
+      relations: { uploads: true },
+      where: { id },
     });
+
+    return uploads.length;
   }
 }

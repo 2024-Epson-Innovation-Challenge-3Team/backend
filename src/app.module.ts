@@ -14,6 +14,8 @@ import { HttpModule } from '@nestjs/axios';
 import { UploadModule } from './upload/upload.module';
 import { CommonModule } from './common/common.module';
 import { ConfigServiceType } from './common/configServiceType';
+import { PrintZoneModule } from './printZone/printZone.module';
+import { PrintModule } from './print/print.module';
 
 @Module({
   imports: [
@@ -43,6 +45,8 @@ import { ConfigServiceType } from './common/configServiceType';
     AuthModule,
     UploadModule,
     CommonModule,
+    PrintZoneModule,
+    PrintModule,
   ],
   controllers: [AppController],
   providers: [

@@ -1,14 +1,17 @@
 import {
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
+  RelationId,
 } from 'typeorm';
 import { BaseDateEntity } from './baseDate.entity';
 import { UserEntity } from './user.entity';
 import { FileEntity } from './file.entity';
+import { JobEntity } from './job.entity';
+import { UPLOAD_STATUS } from '../upload/upload.type';
+import { PrintSettingType } from '../epson/epson.type';
 
 @Entity({ name: 'uploads' })
 export class UploadEntity extends BaseDateEntity {
@@ -38,10 +41,39 @@ export class UploadEntity extends BaseDateEntity {
   })
   collate: boolean;
 
-  @OneToOne(() => FileEntity, (d) => d.upload)
-  @JoinColumn()
-  file: FileEntity;
+  @Column()
+  status: UPLOAD_STATUS;
 
-  @ManyToOne(() => UserEntity, (d) => d.upload)
+  @Column()
+  printerJobId: string;
+
+  @Column({ type: 'int', nullable: true })
+  page_cnt?: number;
+
+  @OneToMany(() => FileEntity, (d) => d.upload, { cascade: ['insert'] })
+  files: FileEntity[];
+
+  @ManyToOne(() => UserEntity, (d) => d.uploads)
   user: UserEntity;
+
+  @RelationId((d: UploadEntity) => d.user, 'userId')
+  userId: UserEntity['id'];
+
+  @ManyToOne(() => JobEntity, (d) => d.uploads, { nullable: true })
+  job?: JobEntity;
+
+  convertPrintSettingType(): PrintSettingType {
+    return {
+      media_size: this.media_size,
+      media_type: this.media_type,
+      borderless: this.borderless,
+      print_quality: this.print_quality,
+      source: this.source,
+      color_mode: this.color_mode,
+      '2_sided': this['2_sided'],
+      reverse_order: this.reverse_order,
+      copies: this.copies,
+      collate: this.collate,
+    };
+  }
 }
