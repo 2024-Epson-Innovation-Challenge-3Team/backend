@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Query } from "@nestjs/common";
 import { TypedBody, TypedQuery, TypedRoute } from '@nestia/core';
 import { PrintService } from './print.service';
 import { AreaQRTagRes, PrinterStatusCallbackReq, PrinterZoneType, QRTagReq } from "./print.type";
@@ -50,7 +50,8 @@ export class PrintController {
 
   @TypedRoute.Get("status/callback")
   async printerStatusCallback(
-    @TypedQuery() callbackReq:PrinterStatusCallbackReq
+    @Query() callbackReq:PrinterStatusCallbackReq
+
   ) {
     return this.printService.printerStatusCallback(callbackReq);
   }
