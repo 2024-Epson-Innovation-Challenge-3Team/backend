@@ -80,7 +80,7 @@ export class PrintService {
 
     const { id } = await this.jobRepo.getWaitingJob(printZoneId, userId);
 
-    return jobs.findIndex((d) => d.id === id);
+    return jobs.findIndex((d) => d.id === id) + 1;
   }
 
   async printExecute(printerQRTagReq: PrinterZoneType, userId: number) {
