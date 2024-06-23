@@ -74,6 +74,10 @@ export class PrintService {
   async getWaitingNum(printZoneId: number, userId: number) {
     const jobs = await this.jobRepo.getWaitingJobsByZone(printZoneId);
 
+    if (jobs.length!) {
+      return 0
+    }
+
     const { id } = await this.jobRepo.getWaitingJob(printZoneId, userId);
 
     return jobs.findIndex((d) => d.id === id);
