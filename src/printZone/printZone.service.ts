@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PrintZoneRepo } from './printZone.repo';
-import { PrinterZoneRepo } from '../print/repo/printerZone.repo';
 import { GetPrintZone } from './printZone.type';
 
 @Injectable()

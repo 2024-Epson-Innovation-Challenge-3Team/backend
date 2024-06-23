@@ -7,8 +7,6 @@ import { UploadRepo } from '../upload/upload.repo';
 import { PrintSymbol } from '../epson/epson.module';
 import { Transactional } from 'typeorm-transactional';
 import { PrinterService } from '../epson/printer.interface';
-import { MetadataTupleType } from 'typia/lib/schemas/metadata/MetadataTupleType';
-import { UPLOAD_STATUS } from '../upload/upload.type';
 
 @Injectable()
 export class PrintService {
@@ -25,7 +23,7 @@ export class PrintService {
   async areaQRTag(printZoneId: number, userId: number): Promise<AreaQRTagRes> {
     const standbyPrinter = await this.getStandbyPrinter(printZoneId);
 
-    if (!standbyPrinter) {
+    if (standbyPrinter) {
       const printerName = await this.printerAssignment(printZoneId, userId);
       return { status: 'PRINT', printerName };
     }
@@ -37,10 +35,9 @@ export class PrintService {
   }
 
   async getStandbyPrinter(printZoneId: number) {
-    const printZone =
-      await this.printerZoneRepo.findQueueAbleOrFail(printZoneId);
+    const printZone = await this.printerZoneRepo.findQueueAble(printZoneId);
 
-    return printZone.printers.find((d) => !d.jobs.length);
+    return printZone?.printers.find((d) => !d.jobs.length);
   }
 
   @Transactional()
@@ -54,15 +51,24 @@ export class PrintService {
   async printerAssignmentWithPrintId(
     printerQRTagReq: PrinterZoneType,
     userId: number,
-  ) {
+  ): Promise<AreaQRTagRes> {
+    const { printZoneId, printerId } = printerQRTagReq;
+
+    const queueAbleZone = await this.printerZoneRepo.findQueueAble(
+      printZoneId,
+      printerId,
+    );
+
+    if (!queueAbleZone) return this.areaQRTag(printZoneId, userId);
+
     const { id: jobId } = await this.jobRepo.getQueueJob(
       printerQRTagReq,
       userId,
     );
 
-    await this.jobRepo.changeStatusPrint(jobId, printerQRTagReq.printerId);
+    await this.jobRepo.changeStatusPrint(jobId, printerId);
 
-    return true;
+    return { status: 'PRINT', printerName: queueAbleZone };
   }
 
   async getWaitingNum(printZoneId: number, userId: number) {

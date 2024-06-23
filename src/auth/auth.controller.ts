@@ -5,9 +5,11 @@ import { Public } from './public.deco';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { UserLoginType } from './userLogin.type';
+import { ApiTags } from '@nestjs/swagger';
 
 @Public()
 @Controller('/auth')
+@ApiTags('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

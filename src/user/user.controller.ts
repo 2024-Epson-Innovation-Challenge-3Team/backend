@@ -4,8 +4,10 @@ import { UserService } from './user.service';
 import { UserEntity } from '../entities/user.entity';
 import { CurrentUser } from '../auth/jwt/getUser.decorator';
 import { UserLoginType } from '../auth/userLogin.type';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('users')
+@ApiTags('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

@@ -11,16 +11,14 @@ export class PrinterZoneRepo extends Repository<PrintZoneEntity> {
     super(PrintZoneEntity, dataSource.createEntityManager());
   }
 
-  async findQueueAbleOrFail(printZoneId: number) {
-    return this.findOneOrFail({
+  async findQueueAble(printZoneId: number, printerId?: string) {
+    return this.findOne({
       relations: { printers: { jobs: true } },
       where: {
         id: printZoneId,
         printers: {
-          id: Not(IsNull()),
-          jobs: {
-            status: JOB_STATUS.WAITING,
-          },
+          id: printerId ?? Not(IsNull()),
+          jobs: { status: JOB_STATUS.WAITING },
         },
       },
     });

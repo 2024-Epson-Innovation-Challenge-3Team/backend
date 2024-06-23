@@ -15,27 +15,11 @@
     }
   },
   "paths": {
-    "/aa": {
+    "/users": {
       "get": {
-        "tags": [],
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/aa"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/sayHello": {
-      "get": {
-        "tags": [],
+        "tags": [
+          "user"
+        ],
         "parameters": [],
         "responses": {
           "200": {
@@ -54,9 +38,24 @@
         }
       }
     },
-    "/insertIpnitValue": {
+    "/auth/naver/login": {
       "get": {
-        "tags": [],
+        "tags": [
+          "auth"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/auth/naver/login/callback": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
         "parameters": [],
         "responses": {
           "200": {
@@ -64,7 +63,248 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserEntity"
+                  "$ref": "#/components/schemas/UserLoginType"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/uploads": {
+      "post": {
+        "tags": [
+          "upload"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadFileRes"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/users/uploads/count": {
+      "get": {
+        "tags": [
+          "upload"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/uploads": {
+      "get": {
+        "tags": [
+          "upload"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetUploadedFilesRes"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/uploads/{uploadId}": {
+      "delete": {
+        "tags": [
+          "upload"
+        ],
+        "parameters": [
+          {
+            "name": "uploadId",
+            "in": "path",
+            "schema": {
+              "type": "number"
+            },
+            "description": "",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/zone": {
+      "get": {
+        "tags": [
+          "printZone"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetPrintZone"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/area/QR": {
+      "post": {
+        "tags": [
+          "print",
+          "QR"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QRTagReq"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AreaQRTagRes"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/print/QR": {
+      "post": {
+        "tags": [
+          "print",
+          "QR"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrinterZoneType"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/queue/seq": {
+      "get": {
+        "tags": [
+          "print"
+        ],
+        "parameters": [
+          {
+            "name": "__0",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/QRTagReq"
+            },
+            "description": "",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/print/execute": {
+      "post": {
+        "tags": [
+          "print"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrinterZoneType"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
                 }
               }
             }
@@ -75,17 +315,6 @@
   },
   "components": {
     "schemas": {
-      "aa": {
-        "type": "object",
-        "properties": {
-          "bb": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "bb"
-        ]
-      },
       "UserEntity": {
         "type": "object",
         "properties": {
@@ -94,11 +323,566 @@
           },
           "name": {
             "type": "string"
+          },
+          "uploadFiles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FileEntity"
+            }
+          },
+          "uploads": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UploadEntity"
+            }
+          },
+          "jobs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JobEntity"
+            }
+          },
+          "modifyDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createDate": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "required": [
           "id",
-          "name"
+          "name",
+          "uploadFiles",
+          "uploads",
+          "jobs",
+          "modifyDate",
+          "createDate"
+        ]
+      },
+      "FileEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "orgFileName": {
+            "type": "string"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "fileSize": {
+            "type": "number"
+          },
+          "fileExtension": {
+            "type": "string"
+          },
+          "uploader": {
+            "$ref": "#/components/schemas/UserEntity"
+          },
+          "upload": {
+            "$ref": "#/components/schemas/UserEntity"
+          },
+          "modifyDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "orgFileName",
+          "fileName",
+          "fileSize",
+          "fileExtension",
+          "uploader",
+          "upload",
+          "modifyDate",
+          "createDate"
+        ]
+      },
+      "UploadEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "media_size": {
+            "oneOf": [
+              {
+                "const": "ms_a4"
+              },
+              {
+                "const": "ms_a3"
+              }
+            ]
+          },
+          "media_type": {
+            "const": "mt_plainpaper"
+          },
+          "borderless": {
+            "type": "boolean"
+          },
+          "print_quality": {
+            "const": "normal"
+          },
+          "source": {
+            "oneOf": [
+              {
+                "const": "front1"
+              },
+              {
+                "const": "front2"
+              }
+            ]
+          },
+          "color_mode": {
+            "oneOf": [
+              {
+                "const": "mono"
+              },
+              {
+                "const": "color"
+              }
+            ]
+          },
+          "2_sided": {
+            "const": "none"
+          },
+          "reverse_order": {
+            "type": "boolean"
+          },
+          "copies": {
+            "type": "number"
+          },
+          "collate": {
+            "type": "boolean"
+          },
+          "status": {
+            "$ref": "#/components/schemas/UPLOAD_STATUS"
+          },
+          "printerJobId": {
+            "type": "string"
+          },
+          "page_cnt": {
+            "type": "number"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FileEntity"
+            }
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserEntity"
+          },
+          "userId": {
+            "type": "number"
+          },
+          "job": {
+            "$ref": "#/components/schemas/JobEntity"
+          },
+          "modifyDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "media_size",
+          "media_type",
+          "borderless",
+          "print_quality",
+          "source",
+          "color_mode",
+          "2_sided",
+          "reverse_order",
+          "copies",
+          "collate",
+          "status",
+          "printerJobId",
+          "files",
+          "user",
+          "userId",
+          "modifyDate",
+          "createDate"
+        ]
+      },
+      "UPLOAD_STATUS": {
+        "oneOf": [
+          {
+            "const": "WAITING"
+          },
+          {
+            "const": "DONE"
+          }
+        ]
+      },
+      "JobEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "status": {
+            "$ref": "#/components/schemas/JOB_STATUS"
+          },
+          "printZone": {
+            "$ref": "#/components/schemas/PrintZoneEntity"
+          },
+          "printer": {
+            "$ref": "#/components/schemas/PrinterEntity"
+          },
+          "uploads": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UploadEntity"
+            }
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserEntity"
+          },
+          "modifyDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "printZone",
+          "uploads",
+          "user",
+          "modifyDate",
+          "createDate"
+        ]
+      },
+      "JOB_STATUS": {
+        "oneOf": [
+          {
+            "const": "WAITING"
+          },
+          {
+            "const": "PRINTER_ASSIGNMENT"
+          }
+        ]
+      },
+      "PrintZoneEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "zone_name": {
+            "type": "string"
+          },
+          "lo": {
+            "type": "string"
+          },
+          "la": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "printers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PrinterEntity"
+            }
+          },
+          "jobs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JobEntity"
+            }
+          },
+          "modifyDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "zone_name",
+          "lo",
+          "la",
+          "address",
+          "printers",
+          "jobs",
+          "modifyDate",
+          "createDate"
+        ]
+      },
+      "PrinterEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "printerName": {
+            "type": "string"
+          },
+          "printerAlarmFlag": {
+            "type": "boolean"
+          },
+          "printZone": {
+            "$ref": "#/components/schemas/PrintZoneEntity"
+          },
+          "jobs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/JobEntity"
+            }
+          },
+          "modifyDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "printerName",
+          "printerAlarmFlag",
+          "printZone",
+          "jobs",
+          "modifyDate",
+          "createDate"
+        ]
+      },
+      "UserLoginType": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "username"
+        ]
+      },
+      "UploadFileRes": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "binary"
+            }
+          },
+          "media_size": {
+            "oneOf": [
+              {
+                "const": "ms_a4"
+              },
+              {
+                "const": "ms_a3"
+              }
+            ]
+          },
+          "media_type": {
+            "const": "mt_plainpaper"
+          },
+          "borderless": {
+            "type": "boolean"
+          },
+          "print_quality": {
+            "const": "normal"
+          },
+          "source": {
+            "oneOf": [
+              {
+                "const": "front1"
+              },
+              {
+                "const": "front2"
+              }
+            ]
+          },
+          "color_mode": {
+            "oneOf": [
+              {
+                "const": "mono"
+              },
+              {
+                "const": "color"
+              }
+            ]
+          },
+          "2_sided": {
+            "const": "none"
+          },
+          "reverse_order": {
+            "type": "boolean"
+          },
+          "copies": {
+            "type": "number"
+          },
+          "collate": {
+            "type": "boolean"
+          },
+          "page_cnt": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "files",
+          "media_size",
+          "media_type",
+          "borderless",
+          "print_quality",
+          "source",
+          "color_mode",
+          "2_sided",
+          "reverse_order",
+          "copies",
+          "collate"
+        ]
+      },
+      "GetUploadedFilesRes": {
+        "type": "object",
+        "properties": {
+          "uploadId": {
+            "type": "number"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "pageCnt": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "uploadId",
+          "fileName"
+        ]
+      },
+      "GetPrintZone": {
+        "type": "object",
+        "properties": {
+          "zone_name": {
+            "type": "string"
+          },
+          "la": {
+            "type": "string"
+          },
+          "lo": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "printers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "printName": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "printName"
+              ]
+            }
+          },
+          "congestion": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "zone_name",
+          "la",
+          "lo",
+          "address",
+          "printers",
+          "congestion"
+        ]
+      },
+      "QRTagReq": {
+        "type": "object",
+        "properties": {
+          "printZoneId": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "printZoneId"
+        ]
+      },
+      "AreaQRTagRes": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "oneOf": [
+              {
+                "const": "QUEUE"
+              },
+              {
+                "const": "PRINT"
+              }
+            ]
+          },
+          "printerName": {
+            "type": "string"
+          },
+          "waitingNum": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "PrinterZoneType": {
+        "type": "object",
+        "properties": {
+          "printerId": {
+            "type": "string"
+          },
+          "printZoneId": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "printerId",
+          "printZoneId"
         ]
       }
     },
@@ -110,6 +894,25 @@
       }
     }
   },
-  "tags": [],
+  "tags": [
+    {
+      "name": "user"
+    },
+    {
+      "name": "auth"
+    },
+    {
+      "name": "upload"
+    },
+    {
+      "name": "printZone"
+    },
+    {
+      "name": "print"
+    },
+    {
+      "name": "QR"
+    }
+  ],
   "x-samchon-emended": true
 }

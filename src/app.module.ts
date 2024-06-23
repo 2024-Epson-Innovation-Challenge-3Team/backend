@@ -37,7 +37,7 @@ import { PrintModule } from './print/print.module';
           database: configSvc.get('DB_DATABASE', ':memory:') as any,
           logging: true,
           synchronize: true,
-          entities: ['dist/**/entities/*.js', UserEntity],
+          entities: ['dist/**/entities/*.js'],
         };
       },
     }),
