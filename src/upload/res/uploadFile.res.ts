@@ -1,5 +1,6 @@
 export interface UploadFileRes {
   files: File[];
+  fileName:string;
   // 용지 크기 (ms_a4 - A4용지)
   media_size?: 'ms_a4' | 'ms_a3';
   //용지 종류 (mt_plainpaper - )

@@ -3,6 +3,7 @@ import { DataSource, IsNull, Not, Repository } from 'typeorm';
 import { JobEntity } from '../../entities/job.entity';
 import { JOB_STATUS, PrinterZoneType } from '../print.type';
 import { UploadEntity } from '../../entities/upload.entity';
+import { DeepPartial } from "typeorm/common/DeepPartial";
 
 @Injectable()
 export class JobRepo extends Repository<JobEntity> {
@@ -35,13 +36,19 @@ export class JobRepo extends Repository<JobEntity> {
     printZoneId: number,
     printerId: string,
     userId: number,
+    jobId?:number
   ) {
-    return this.save({
+
+    const entity:DeepPartial<JobEntity> = {
       printZone: { id: printZoneId },
       printer: { id: printerId },
       status: JOB_STATUS.PRINTER_ASSIGNMENT,
       user: { id: userId },
-    });
+    };
+
+    jobId && (entity.id = jobId)
+
+    return this.save(entity);
   }
 
   async getWaitingJobsByZone(printZoneId: number) {

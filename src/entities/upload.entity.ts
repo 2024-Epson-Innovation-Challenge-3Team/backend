@@ -48,11 +48,11 @@ export class UploadEntity extends BaseDateEntity {
   })
   collate?: boolean;
 
-  @Column({ default: UPLOAD_STATUS.WAITING })
+  @Column({ default: UPLOAD_STATUS.PREPARATION })
   status: UPLOAD_STATUS;
 
-  // @Column({ nullable: true })
-  // printerJobId?: string;
+  @Column({ nullable: true })
+  printerJobId?: string;
 
   @Column({ type: 'int', nullable: true })
   page_cnt?: number;

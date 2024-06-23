@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { TypedBody, TypedQuery, TypedRoute } from '@nestia/core';
 import { PrintService } from './print.service';
-import { AreaQRTagRes, PrinterZoneType, QRTagReq } from './print.type';
+import { AreaQRTagRes, PrinterStatusCallbackReq, PrinterZoneType, QRTagReq } from "./print.type";
 import { UserLoginType } from '../auth/userLogin.type';
 import { CurrentUser } from '../auth/jwt/getUser.decorator';
 import { ApiTags } from '@nestjs/swagger';
@@ -46,5 +46,12 @@ export class PrintController {
     @CurrentUser() { id: userId }: UserLoginType,
   ): Promise<boolean> {
     return this.printService.printExecute(printerQRTagReq, userId);
+  }
+
+  @TypedRoute.Get("status/callback")
+  async printerStatusCallback(
+    @TypedQuery() callbackReq:PrinterStatusCallbackReq
+  ) {
+    return this.printService.printerStatusCallback(callbackReq);
   }
 }

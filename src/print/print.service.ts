@@ -1,12 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { AreaQRTagRes, PrinterZoneType } from './print.type';
-import { JobRepo } from './repo/job.repo';
-import { PrinterRepo } from './repo/printer.repo';
-import { PrinterZoneRepo } from './repo/printerZone.repo';
-import { UploadRepo } from '../upload/upload.repo';
-import { PrintSymbol } from '../epson/epson.module';
-import { Transactional } from 'typeorm-transactional';
-import { PrinterService } from '../epson/printer.interface';
+import { Inject, Injectable } from "@nestjs/common";
+import { AreaQRTagRes, JOB_STATUS, PrinterStatusCallbackReq, PrinterZoneType } from "./print.type";
+import { JobRepo } from "./repo/job.repo";
+import { PrinterRepo } from "./repo/printer.repo";
+import { PrinterZoneRepo } from "./repo/printerZone.repo";
+import { UploadRepo } from "../upload/upload.repo";
+import { PrintSymbol } from "../epson/epson.module";
+import { Transactional } from "typeorm-transactional";
+import { PrinterService } from "../epson/printer.interface";
 
 @Injectable()
 export class PrintService {
@@ -16,8 +16,9 @@ export class PrintService {
     private readonly printerZoneRepo: PrinterZoneRepo,
     private readonly uploadRepo: UploadRepo,
     @Inject(PrintSymbol)
-    private readonly printerService: PrinterService,
-  ) {}
+    private readonly printerService: PrinterService
+  ) {
+  }
 
   @Transactional()
   async areaQRTag(printZoneId: number, userId: number): Promise<AreaQRTagRes> {
@@ -25,13 +26,13 @@ export class PrintService {
 
     if (standbyPrinter) {
       const printerName = await this.printerAssignment(printZoneId, userId);
-      return { status: 'PRINT', printerName };
+      return { status: "PRINT", printerName };
     }
 
     await this.jobRepo.queueEntry(printZoneId, userId);
     const waitingNum = await this.getWaitingNum(printZoneId, userId);
 
-    return { status: 'QUEUE', waitingNum };
+    return { status: "QUEUE", waitingNum };
   }
 
   async getStandbyPrinter(printZoneId: number) {
@@ -50,32 +51,32 @@ export class PrintService {
 
   async printerAssignmentWithPrintId(
     printerQRTagReq: PrinterZoneType,
-    userId: number,
+    userId: number
   ): Promise<AreaQRTagRes> {
     const { printZoneId, printerId } = printerQRTagReq;
 
     const queueAbleZone = await this.printerZoneRepo.findQueueAble(
       printZoneId,
-      printerId,
+      printerId
     );
 
     if (!queueAbleZone) return this.areaQRTag(printZoneId, userId);
 
     const { id: jobId } = await this.jobRepo.getQueueJob(
       printerQRTagReq,
-      userId,
+      userId
     );
 
-    await this.jobRepo.changeStatusPrint(jobId, printerId);
+    const assigmentJob = await this.jobRepo.printerAssignment(printZoneId, printerId, userId, jobId);
 
-    return { status: 'PRINT', printerName: 'queueAbleZone' };
+    return { status: "PRINT", printerName: assigmentJob.printer?.printerName };
   }
 
   async getWaitingNum(printZoneId: number, userId: number) {
     const jobs = await this.jobRepo.getWaitingJobsByZone(printZoneId);
 
     if (jobs.length!) {
-      return 0
+      return 0;
     }
 
     const { id } = await this.jobRepo.getWaitingJob(printZoneId, userId);
@@ -93,13 +94,30 @@ export class PrintService {
       this.printerService.printFile(
         printerQRTagReq.printerId,
         d.files[0].fileName,
-        d.convertPrintSettingType(),
-      ),
+        d.convertPrintSettingType()
+      )
     );
 
     const printFileRes = await Promise.all(printJobs);
     await this.uploadRepo.printExecute(uploads, printFileRes);
 
     return true;
+  }
+
+  async printerStatusCallback(callbackReq: PrinterStatusCallbackReq) {
+    const printer = await this.uploadRepo.findOneOrFail({
+      relations: { job: true },
+      where: { printerJobId: callbackReq.JobId }
+    });
+
+    printer.status = callbackReq.JobStatus.Status;
+    await printer.save();
+
+    const jobId = printer.job!.id;
+
+    const job = await this.jobRepo.findOneByOrFail({ id: jobId, status: JOB_STATUS.WAITING });
+    if (!job)
+      await this.jobRepo.update({ id: jobId }, { status: JOB_STATUS.DONE });
+
   }
 }
