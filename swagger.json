@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "servers": [
     {
-      "url": "http://localhost:3000",
+      "url": "https://0e1a-125-246-25-252.ngrok-free.app",
       "description": "Local Server"
     }
   ],
@@ -59,14 +59,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserLoginType"
-                }
-              }
-            }
+            "description": ""
           }
         }
       }
@@ -244,7 +237,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "boolean"
+                  "$ref": "#/components/schemas/AreaQRTagRes"
                 }
               }
             }
@@ -669,21 +662,6 @@
           "jobs",
           "modifyDate",
           "createDate"
-        ]
-      },
-      "UserLoginType": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "username": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "username"
         ]
       },
       "UploadFileRes": {

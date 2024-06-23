@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
-import { UserLoginType } from './userLogin.type';
-import { ConfigService } from '@nestjs/config';
+import { Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { Response } from "express";
+import { UserLoginType } from "./userLogin.type";
+import { ConfigService } from "@nestjs/config";
 import { ConfigServiceType } from '../common/configServiceType';
 
 @Injectable()
@@ -17,5 +17,7 @@ export class AuthService {
       secure: this.configService.get('NODE_ENV') !== 'dev',
       httpOnly: true,
     });
+    return res.redirect(302, 'http://localhost:3000');
   }
 }
+

@@ -7,7 +7,7 @@ export class UserService {
   constructor(private readonly userRepo: UserRepo) {}
 
   async currentUserInfo(id: UserEntity['id']) {
-    return this.userRepo.findBy({ id });
+    return this.userRepo.findOneBy({ id });
   }
 
   async getUploadedFilesCnt(id: UserEntity['id']) {

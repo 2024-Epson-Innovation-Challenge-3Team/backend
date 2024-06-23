@@ -33,6 +33,7 @@
     "axios": "^1.7.2",
     "cookie-parser": "^1.4.6",
     "cross-env": "^7.0.3",
+    "openapi-typescript": "^7.0.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",

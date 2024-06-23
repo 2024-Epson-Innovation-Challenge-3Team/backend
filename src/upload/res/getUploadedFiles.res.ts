@@ -3,4 +3,5 @@ export interface GetUploadedFilesRes {
   fileName: string;
   pageCnt?: number | null;
   status?: string;
+  createDate: Date;
 }

@@ -68,7 +68,7 @@ export class PrintService {
 
     await this.jobRepo.changeStatusPrint(jobId, printerId);
 
-    return { status: 'PRINT', printerName: queueAbleZone };
+    return { status: 'PRINT', printerName: 'queueAbleZone' };
   }
 
   async getWaitingNum(printZoneId: number, userId: number) {

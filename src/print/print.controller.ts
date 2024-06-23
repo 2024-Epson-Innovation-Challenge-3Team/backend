@@ -25,7 +25,7 @@ export class PrintController {
   async printerQRTag(
     @TypedBody() printerQRTagReq: PrinterZoneType,
     @CurrentUser() { id: userId }: UserLoginType,
-  ): Promise<boolean> {
+  ): Promise<AreaQRTagRes> {
     return this.printService.printerAssignmentWithPrintId(
       printerQRTagReq,
       userId,

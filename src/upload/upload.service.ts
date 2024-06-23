@@ -44,6 +44,7 @@ export class UploadService {
       fileName: d.files[0].fileName,
       pageCnt: d.page_cnt,
       status: d.status,
+      createDate: d.createDate,
     }));
   }
 

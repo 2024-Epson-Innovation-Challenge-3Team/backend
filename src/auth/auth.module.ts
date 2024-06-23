@@ -7,6 +7,7 @@ import { AuthController } from './auth.controller';
 import { NaverStrategy } from './naver/naver.strategy';
 import { ConfigServiceType } from '../common/configServiceType';
 
+
 @Module({
   imports: [
     JwtModule.registerAsync({
@@ -14,7 +15,7 @@ import { ConfigServiceType } from '../common/configServiceType';
       inject: [ConfigService],
       useFactory: (configService: ConfigService<ConfigServiceType>) => ({
         secret: configService.get('JWT_SECRET'),
-        signOptions: { expiresIn: configService.get('JWT_EXPIRES_IN') },
+        signOptions: { expiresIn: +configService.get('JWT_EXPIRES_IN') },
       }),
     }),
   ],

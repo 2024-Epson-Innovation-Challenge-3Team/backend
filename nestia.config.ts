@@ -19,7 +19,7 @@ const NESTIA_CONFIG: INestiaConfig = {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
+        url: 'https://0e1a-125-246-25-252.ngrok-free.app',
         description: 'Local Server',
       },
     ],

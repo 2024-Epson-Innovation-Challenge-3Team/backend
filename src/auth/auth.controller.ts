@@ -1,4 +1,4 @@
-import { Controller, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { TypedRoute } from '@nestia/core';
 import { NaverGuard } from './naver/naver.guard';
 import { Public } from './public.deco';
@@ -18,12 +18,11 @@ export class AuthController {
   async naverLogin() {}
 
   @UseGuards(NaverGuard)
-  @TypedRoute.Get('/naver/login/callback')
+  @Get('/naver/login/callback')
   async naverLoginCallback(
     @Req() { user }: { user: UserLoginType },
     @Res({ passthrough: true }) res: Response,
   ) {
     await this.authService.login(user, res);
-    return user;
   }
 }
