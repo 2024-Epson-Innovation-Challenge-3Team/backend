@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, IsNull, Not, Repository } from 'typeorm';
+import { DataSource, Not, Repository } from 'typeorm';
 import { JobEntity } from '../../entities/job.entity';
 import { JOB_STATUS, PrinterZoneType } from '../print.type';
 import { UploadEntity } from '../../entities/upload.entity';
-import { DeepPartial } from "typeorm/common/DeepPartial";
+import { DeepPartial } from 'typeorm/common/DeepPartial';
 
 @Injectable()
 export class JobRepo extends Repository<JobEntity> {
@@ -11,8 +11,9 @@ export class JobRepo extends Repository<JobEntity> {
     super(JobEntity, dataSource.createEntityManager());
   }
 
-  async queueEntry(printZoneId: number, userId: number) {
+  async queueEntry(printZoneId: number, userId: number, printerId: string) {
     return this.save({
+      printer: { id: printerId },
       printZone: { id: printZoneId },
       status: JOB_STATUS.WAITING,
       user: { id: userId },
@@ -23,11 +24,12 @@ export class JobRepo extends Repository<JobEntity> {
     { printZoneId, printerId }: PrinterZoneType,
     userId: number,
   ) {
-    return this.findOneOrFail({
+    return this.findOne({
       where: {
         printZone: { id: printZoneId },
         user: { id: userId },
         printer: { id: printerId },
+        status: Not(JOB_STATUS.DONE),
       },
     });
   }
@@ -36,17 +38,16 @@ export class JobRepo extends Repository<JobEntity> {
     printZoneId: number,
     printerId: string,
     userId: number,
-    jobId?:number
+    jobId?: number,
   ) {
-
-    const entity:DeepPartial<JobEntity> = {
+    const entity: DeepPartial<JobEntity> = {
       printZone: { id: printZoneId },
       printer: { id: printerId },
       status: JOB_STATUS.PRINTER_ASSIGNMENT,
       user: { id: userId },
     };
 
-    jobId && (entity.id = jobId)
+    jobId && (entity.id = jobId);
 
     return this.save(entity);
   }

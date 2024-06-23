@@ -1,4 +1,4 @@
-import { UPLOAD_STATUS } from "../upload/upload.type";
+import { UPLOAD_STATUS } from '../upload/upload.type';
 
 export type QRTagReq = {
   printZoneId: number;
@@ -19,17 +19,16 @@ export enum PRINT_STATUS {
 }
 
 export type AreaQRTagRes = {
-  status: 'QUEUE' | 'PRINT';
+  status: 'QUEUE' | 'PRINT' | 'PRINTER_ASSIGNMENT';
   printerName?: string;
   waitingNum?: number;
 };
 
-
 export type PrinterStatusCallbackReq = {
-  JobId:string,
-  JobStatus:{
-    Status:UPLOAD_STATUS,
-    StatusReason:string,
-    UpdateDate:string,
-  }
-}
+  JobId: string;
+  JobStatus: {
+    Status: UPLOAD_STATUS;
+    StatusReason: string;
+    UpdateDate: string;
+  };
+};

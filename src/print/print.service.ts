@@ -1,12 +1,19 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { AreaQRTagRes, JOB_STATUS, PrinterStatusCallbackReq, PrinterZoneType } from "./print.type";
-import { JobRepo } from "./repo/job.repo";
-import { PrinterRepo } from "./repo/printer.repo";
-import { PrinterZoneRepo } from "./repo/printerZone.repo";
-import { UploadRepo } from "../upload/upload.repo";
-import { PrintSymbol } from "../epson/epson.module";
-import { Transactional } from "typeorm-transactional";
-import { PrinterService } from "../epson/printer.interface";
+import { Inject, Injectable } from '@nestjs/common';
+import {
+  AreaQRTagRes,
+  JOB_STATUS,
+  PrinterStatusCallbackReq,
+  PrinterZoneType,
+} from './print.type';
+import { JobRepo } from './repo/job.repo';
+import { PrinterRepo } from './repo/printer.repo';
+import { PrinterZoneRepo } from './repo/printerZone.repo';
+import { UploadRepo } from '../upload/upload.repo';
+import { PrintSymbol } from '../epson/epson.module';
+import { Transactional } from 'typeorm-transactional';
+import { PrinterService } from '../epson/printer.interface';
+import { Not } from 'typeorm';
+import { UPLOAD_STATUS } from '../upload/upload.type';
 
 @Injectable()
 export class PrintService {
@@ -16,30 +23,8 @@ export class PrintService {
     private readonly printerZoneRepo: PrinterZoneRepo,
     private readonly uploadRepo: UploadRepo,
     @Inject(PrintSymbol)
-    private readonly printerService: PrinterService
-  ) {
-  }
-
-  @Transactional()
-  async areaQRTag(printZoneId: number, userId: number): Promise<AreaQRTagRes> {
-    const standbyPrinter = await this.getStandbyPrinter(printZoneId);
-
-    if (standbyPrinter) {
-      const printerName = await this.printerAssignment(printZoneId, userId);
-      return { status: "PRINT", printerName };
-    }
-
-    await this.jobRepo.queueEntry(printZoneId, userId);
-    const waitingNum = await this.getWaitingNum(printZoneId, userId);
-
-    return { status: "QUEUE", waitingNum };
-  }
-
-  async getStandbyPrinter(printZoneId: number) {
-    const printZone = await this.printerZoneRepo.findQueueAble(printZoneId);
-
-    return printZone?.printers.find((d) => !d.jobs.length);
-  }
+    private readonly printerService: PrinterService,
+  ) {}
 
   @Transactional()
   async printerAssignment(printZoneId: number, userId: number) {
@@ -49,53 +34,101 @@ export class PrintService {
     return printer.printerName;
   }
 
-  async printerAssignmentWithPrintId(
+  async printerQRTag(
     printerQRTagReq: PrinterZoneType,
-    userId: number
+    userId: number,
   ): Promise<AreaQRTagRes> {
     const { printZoneId, printerId } = printerQRTagReq;
 
-    const queueAbleZone = await this.printerZoneRepo.findQueueAble(
-      printZoneId,
-      printerId
-    );
+    const runningJob = await this.jobRepo.findOne({
+      where: {
+        printZone: { id: printZoneId },
+        printer: { id: printerId },
+        status: JOB_STATUS.PRINTER_ASSIGNMENT,
+      },
+    });
 
-    if (!queueAbleZone) return this.areaQRTag(printZoneId, userId);
+    if (runningJob) {
+      const currentUserWaitingJob = await this.jobRepo.findOne({
+        where: {
+          printZone: { id: printZoneId },
+          user: { id: userId },
+          status: Not(JOB_STATUS.DONE),
+        },
+      });
 
-    const { id: jobId } = await this.jobRepo.getQueueJob(
+      if (currentUserWaitingJob) {
+        if (currentUserWaitingJob.status === JOB_STATUS.PRINTER_ASSIGNMENT) {
+          return { status: 'PRINTER_ASSIGNMENT' };
+        }
+        const waitingNum = await this.getWaitingNum(printZoneId, userId);
+        return { status: 'QUEUE', waitingNum: waitingNum };
+      }
+
+      await this.jobRepo.queueEntry(printZoneId, userId, printerId);
+      const waitingNum = await this.getWaitingNum(printZoneId, userId);
+
+      return { status: 'QUEUE', waitingNum: waitingNum };
+    }
+
+    const currentUserJob = await this.jobRepo.getQueueJob(
       printerQRTagReq,
-      userId
+      userId,
     );
 
-    const assigmentJob = await this.jobRepo.printerAssignment(printZoneId, printerId, userId, jobId);
+    if (!currentUserJob) {
+      const waitingJob = await this.jobRepo.find({
+        where: {
+          printer: { id: printerId },
+          status: JOB_STATUS.WAITING,
+        },
+      });
 
-    return { status: "PRINT", printerName: assigmentJob.printer?.printerName };
+      if (waitingJob.length) {
+        await this.jobRepo.queueEntry(printZoneId, userId, printerId);
+        const waitingNum = await this.getWaitingNum(printZoneId, userId);
+        return { status: 'QUEUE', waitingNum };
+      }
+    }
+
+    await this.jobRepo.printerAssignment(
+      printZoneId,
+      printerId,
+      userId,
+      currentUserJob?.id,
+    );
+
+    const { printerName } = await this.printerRepo.findOneByOrFail({
+      id: printerId,
+    });
+
+    return { status: 'PRINT', printerName };
   }
 
   async getWaitingNum(printZoneId: number, userId: number) {
     const jobs = await this.jobRepo.getWaitingJobsByZone(printZoneId);
 
-    if (jobs.length!) {
-      return 0;
-    }
+    if (!jobs.length) return 0;
 
     const { id } = await this.jobRepo.getWaitingJob(printZoneId, userId);
 
-    return jobs.findIndex((d) => d.id === id) + 1;
+    return jobs.findIndex((d) => d.id === id);
   }
 
   async printExecute(printerQRTagReq: PrinterZoneType, userId: number) {
     const uploads = await this.uploadRepo.getUserUploads(userId);
-    const { id } = await this.jobRepo.getQueueJob(printerQRTagReq, userId);
+    const queueJob = await this.jobRepo.getQueueJob(printerQRTagReq, userId);
 
-    await this.jobRepo.applyUploadToJob(id, uploads);
+    if (!queueJob) throw Error('gds');
+
+    await this.jobRepo.applyUploadToJob(queueJob.id, uploads);
 
     const printJobs = uploads.map((d) =>
       this.printerService.printFile(
         printerQRTagReq.printerId,
         d.files[0].fileName,
-        d.convertPrintSettingType()
-      )
+        d.convertPrintSettingType(),
+      ),
     );
 
     const printFileRes = await Promise.all(printJobs);
@@ -105,19 +138,27 @@ export class PrintService {
   }
 
   async printerStatusCallback(callbackReq: PrinterStatusCallbackReq) {
-    const printer = await this.uploadRepo.findOneOrFail({
-      relations: { job: true },
-      where: { printerJobId: callbackReq.JobId }
+    const upload = await this.uploadRepo.findOneOrFail({
+      relations: { job: { printer: true } },
+      where: { printerJobId: callbackReq.JobId },
     });
 
-    printer.status = callbackReq.JobStatus.Status;
-    await printer.save();
+    upload.status = callbackReq.JobStatus.Status;
+    await upload.save();
 
-    const jobId = printer.job!.id;
+    const jobId = upload.job!.id;
 
-    const job = await this.jobRepo.findOneByOrFail({ id: jobId, status: JOB_STATUS.WAITING });
-    if (!job)
+    const job = await this.jobRepo.findOne({
+      relations: { uploads: true, printer: true },
+      where: {
+        id: jobId,
+        uploads: {
+          status: Not(UPLOAD_STATUS.DONE),
+        },
+      },
+    });
+    if (!job) {
       await this.jobRepo.update({ id: jobId }, { status: JOB_STATUS.DONE });
-
+    }
   }
 }

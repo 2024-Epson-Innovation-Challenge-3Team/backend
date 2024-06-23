@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
-import { UploadEntity } from '../entities/upload.entity';
-import { UPLOAD_STATUS } from './upload.type';
-import { PrintFileResponse } from '../epson/printer.interface';
+import { Injectable } from "@nestjs/common";
+import { DataSource, Repository } from "typeorm";
+import { UploadEntity } from "../entities/upload.entity";
+import { UPLOAD_STATUS } from "./upload.type";
+import { PrintFileResponse } from "../epson/printer.interface";
 
 @Injectable()
 export class UploadRepo extends Repository<UploadEntity> {
@@ -13,7 +13,7 @@ export class UploadRepo extends Repository<UploadEntity> {
   async getUserUploads(userId: number) {
     return this.find({
       relations: { files: true },
-      where: { user: { id: userId } },
+      where: { user: { id: userId }, status: UPLOAD_STATUS.WAITING },
     });
   }
 

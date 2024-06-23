@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "servers": [
     {
-      "url": "https://0e1a-125-246-25-252.ngrok-free.app",
+      "url": "http://localhost:3000",
       "description": "Local Server"
     }
   ],
@@ -27,10 +27,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UserEntity"
-                  }
+                  "$ref": "#/components/schemas/LoginRes"
                 }
               }
             }
@@ -304,11 +301,34 @@
           }
         }
       }
+    },
+    "/status/callback": {
+      "get": {
+        "tags": [
+          "print"
+        ],
+        "parameters": [
+          {
+            "name": "callbackReq",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/PrinterStatusCallbackReq"
+            },
+            "description": "",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
-      "UserEntity": {
+      "LoginRes": {
         "type": "object",
         "properties": {
           "id": {
@@ -316,352 +336,11 @@
           },
           "name": {
             "type": "string"
-          },
-          "uploadFiles": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/FileEntity"
-            }
-          },
-          "uploads": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/UploadEntity"
-            }
-          },
-          "jobs": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/JobEntity"
-            }
-          },
-          "modifyDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "createDate": {
-            "type": "string",
-            "format": "date-time"
           }
         },
         "required": [
           "id",
-          "name",
-          "uploadFiles",
-          "uploads",
-          "jobs",
-          "modifyDate",
-          "createDate"
-        ]
-      },
-      "FileEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "orgFileName": {
-            "type": "string"
-          },
-          "fileName": {
-            "type": "string"
-          },
-          "fileSize": {
-            "type": "number"
-          },
-          "fileExtension": {
-            "type": "string"
-          },
-          "uploader": {
-            "$ref": "#/components/schemas/UserEntity"
-          },
-          "upload": {
-            "$ref": "#/components/schemas/UserEntity"
-          },
-          "modifyDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "createDate": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "id",
-          "orgFileName",
-          "fileName",
-          "fileSize",
-          "fileExtension",
-          "uploader",
-          "upload",
-          "modifyDate",
-          "createDate"
-        ]
-      },
-      "UploadEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "media_size": {
-            "oneOf": [
-              {
-                "const": "ms_a4"
-              },
-              {
-                "const": "ms_a3"
-              }
-            ]
-          },
-          "media_type": {
-            "const": "mt_plainpaper"
-          },
-          "borderless": {
-            "type": "boolean"
-          },
-          "print_quality": {
-            "const": "normal"
-          },
-          "source": {
-            "oneOf": [
-              {
-                "const": "front1"
-              },
-              {
-                "const": "front2"
-              }
-            ]
-          },
-          "color_mode": {
-            "oneOf": [
-              {
-                "const": "mono"
-              },
-              {
-                "const": "color"
-              }
-            ]
-          },
-          "2_sided": {
-            "const": "none"
-          },
-          "reverse_order": {
-            "type": "boolean"
-          },
-          "copies": {
-            "type": "number"
-          },
-          "collate": {
-            "type": "boolean"
-          },
-          "status": {
-            "$ref": "#/components/schemas/UPLOAD_STATUS"
-          },
-          "printerJobId": {
-            "type": "string"
-          },
-          "page_cnt": {
-            "type": "number"
-          },
-          "files": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/FileEntity"
-            }
-          },
-          "user": {
-            "$ref": "#/components/schemas/UserEntity"
-          },
-          "userId": {
-            "type": "number"
-          },
-          "job": {
-            "$ref": "#/components/schemas/JobEntity"
-          },
-          "modifyDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "createDate": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "id",
-          "media_size",
-          "media_type",
-          "borderless",
-          "print_quality",
-          "source",
-          "color_mode",
-          "2_sided",
-          "reverse_order",
-          "copies",
-          "collate",
-          "status",
-          "printerJobId",
-          "files",
-          "user",
-          "userId",
-          "modifyDate",
-          "createDate"
-        ]
-      },
-      "UPLOAD_STATUS": {
-        "oneOf": [
-          {
-            "const": "WAITING"
-          },
-          {
-            "const": "DONE"
-          }
-        ]
-      },
-      "JobEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "status": {
-            "$ref": "#/components/schemas/JOB_STATUS"
-          },
-          "printZone": {
-            "$ref": "#/components/schemas/PrintZoneEntity"
-          },
-          "printer": {
-            "$ref": "#/components/schemas/PrinterEntity"
-          },
-          "uploads": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/UploadEntity"
-            }
-          },
-          "user": {
-            "$ref": "#/components/schemas/UserEntity"
-          },
-          "modifyDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "createDate": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "id",
-          "status",
-          "printZone",
-          "uploads",
-          "user",
-          "modifyDate",
-          "createDate"
-        ]
-      },
-      "JOB_STATUS": {
-        "oneOf": [
-          {
-            "const": "WAITING"
-          },
-          {
-            "const": "PRINTER_ASSIGNMENT"
-          }
-        ]
-      },
-      "PrintZoneEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "zone_name": {
-            "type": "string"
-          },
-          "lo": {
-            "type": "string"
-          },
-          "la": {
-            "type": "string"
-          },
-          "address": {
-            "type": "string"
-          },
-          "printers": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PrinterEntity"
-            }
-          },
-          "jobs": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/JobEntity"
-            }
-          },
-          "modifyDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "createDate": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "id",
-          "zone_name",
-          "lo",
-          "la",
-          "address",
-          "printers",
-          "jobs",
-          "modifyDate",
-          "createDate"
-        ]
-      },
-      "PrinterEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "printerName": {
-            "type": "string"
-          },
-          "printerAlarmFlag": {
-            "type": "boolean"
-          },
-          "printZone": {
-            "$ref": "#/components/schemas/PrintZoneEntity"
-          },
-          "jobs": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/JobEntity"
-            }
-          },
-          "modifyDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "createDate": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "id",
-          "printerName",
-          "printerAlarmFlag",
-          "printZone",
-          "jobs",
-          "modifyDate",
-          "createDate"
+          "name"
         ]
       },
       "UploadFileRes": {
@@ -674,6 +353,9 @@
               "format": "binary"
             }
           },
+          "fileName": {
+            "type": "string"
+          },
           "media_size": {
             "oneOf": [
               {
@@ -731,16 +413,7 @@
         },
         "required": [
           "files",
-          "media_size",
-          "media_type",
-          "borderless",
-          "print_quality",
-          "source",
-          "color_mode",
-          "2_sided",
-          "reverse_order",
-          "copies",
-          "collate"
+          "fileName"
         ]
       },
       "GetUploadedFilesRes": {
@@ -764,11 +437,16 @@
           },
           "status": {
             "type": "string"
+          },
+          "createDate": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "required": [
           "uploadId",
-          "fileName"
+          "fileName",
+          "createDate"
         ]
       },
       "GetPrintZone": {
@@ -861,6 +539,47 @@
         "required": [
           "printerId",
           "printZoneId"
+        ]
+      },
+      "PrinterStatusCallbackReq": {
+        "type": "object",
+        "properties": {
+          "JobId": {
+            "type": "string"
+          },
+          "JobStatus": {
+            "type": "object",
+            "properties": {
+              "Status": {
+                "oneOf": [
+                  {
+                    "const": "PREPARATION"
+                  },
+                  {
+                    "const": "WAITING"
+                  },
+                  {
+                    "const": "DONE"
+                  }
+                ]
+              },
+              "StatusReason": {
+                "type": "string"
+              },
+              "UpdateDate": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "Status",
+              "StatusReason",
+              "UpdateDate"
+            ]
+          }
+        },
+        "required": [
+          "JobId",
+          "JobStatus"
         ]
       }
     },
