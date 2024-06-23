@@ -19,6 +19,7 @@ export class UploadService {
   async uploadFile(uploadFileRes: UploadFileRes, userId: UserEntity['id']) {
     const { files, ...uploadSetting } = uploadFileRes;
     const uploadFilesRes = await this.fileSvc.uploadFiles(files);
+    uploadFilesRes.map(d=>d.fileName = uploadFileRes.fileName)
 
     await this.uploadRep.save({
       ...uploadSetting,
