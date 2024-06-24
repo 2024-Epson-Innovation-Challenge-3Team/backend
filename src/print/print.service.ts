@@ -126,7 +126,7 @@ export class PrintService {
     const printJobs = uploads.map((d) =>
       this.printerService.printFile(
         printerQRTagReq.printerId,
-        d.files[0].fileName,
+        d.files[0].orgFileName,
         d.convertPrintSettingType(),
       ),
     );

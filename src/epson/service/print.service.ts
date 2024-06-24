@@ -20,14 +20,16 @@ export class PrintService {
     subjectId: string,
     accessToken: string,
     printSetting: PrintSettingType,
+    ext: string,
   ): Promise<PrintResType> {
     const jobUri = `https://${this.host}/api/1/printing/printers/${subjectId}/jobs`;
     const data: PrintJobDataType = {
       job_name: 'SampleJob1',
-      print_mode: 'document',
-      print_setting: printSetting,
+      print_mode: ext === 'png' ? 'photo' : 'document',
+      // print_setting: printSetting,
     };
 
+    console.log(printSetting);
     const headers = {
       Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json;charset=utf-8',

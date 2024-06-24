@@ -17,9 +17,10 @@ export class EpsonPrintImpl implements PrinterService {
     private readonly alarmService: AlarmService,
   ) {}
 
-  async setAlarmOnThePrinter(printerId: string): Promise<boolean> {
-    const { access_token } = await this.authService.authenticate(printerId);
-
+  async setAlarmOnThePrinter(
+    access_token: string,
+    printerId: string,
+  ): Promise<boolean> {
     const alarmServiceType = await this.alarmService.setAlarmOnThePrinter(
       printerId,
       access_token,
@@ -33,16 +34,22 @@ export class EpsonPrintImpl implements PrinterService {
     filePath: string,
     printSettingType: PrintSettingType,
   ): Promise<PrintFileResponse> {
+    const ext = filePath.split('.').reverse()[0];
+
     const { subject_id, access_token } =
       await this.authService.authenticate(printerId);
+
     const { upload_uri, id } = await this.printService.createPrintJob(
       subject_id,
       access_token,
       printSettingType,
+      ext,
     );
 
     await this.uploadService.uploadPrintFile(upload_uri, filePath);
     await this.executeService.executePrint(subject_id, id, access_token);
+
+    await this.setAlarmOnThePrinter(access_token, subject_id);
 
     return { jobId: id, filePath };
   }

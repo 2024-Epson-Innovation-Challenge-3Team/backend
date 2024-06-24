@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { ConfigServiceType } from '../../common/configServiceType';
-import { AlarmServiceType, PrintResType } from '../epson.type';
+import {
+  AlarmServiceType,
+  PrintJobDataType,
+  PrintResType,
+} from '../epson.type';
 
 @Injectable()
 export class AlarmService {
@@ -22,11 +26,16 @@ export class AlarmService {
       Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json;charset=utf-8',
     };
+    const data = {
+      notification: true,
+      callback_uri:
+        'https://90d6-211-217-196-113.ngrok-free.app/status/callback',
+    };
 
     try {
       const response = await this.httpService.axiosRef.post<AlarmServiceType>(
         jobUri,
-        {},
+        data,
         { headers },
       );
       return response.data;

@@ -13,5 +13,8 @@ export interface PrinterService {
     printSettingType: PrintSettingType,
   ): Promise<PrintFileResponse>;
 
-  setAlarmOnThePrinter(printerId: string): Promise<boolean>;
+  setAlarmOnThePrinter(
+    access_token: string,
+    printerId: string,
+  ): Promise<boolean>;
 }

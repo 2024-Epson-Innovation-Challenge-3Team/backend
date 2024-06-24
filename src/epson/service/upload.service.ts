@@ -14,15 +14,16 @@ export class UploadService {
   private readonly host = this.configService.get('EPSON_HOST');
 
   async uploadPrintFile(baseUri: string, localFilePath: string): Promise<void> {
-    const localFileName = path.basename(localFilePath);
-    const uploadUri = `${baseUri}&File=${localFileName}`;
+
+    const ext = localFilePath.split('.').reverse()[0];
+    const uploadUri = `${baseUri}&File=1.${ext}`;
 
     const headers = {
-      'Content-Type': 'image/png',
+      'Content-Type': ext === 'png' ? 'image/png' : 'image/jpeg',
     };
 
     try {
-      const fileStream = fs.createReadStream(localFilePath);
+      const fileStream = fs.createReadStream(path.join('asset', localFilePath));
       const response = await this.httpService.axiosRef.post(
         uploadUri,
         fileStream,
